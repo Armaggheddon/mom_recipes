@@ -1,0 +1,89 @@
+services:
+
+  db:
+    image: postgres:18.0-alpine3.22
+    container_name: db-postgres
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./postgres:/docker-entrypoint-initdb.d/
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: db_password
+      POSTGRES_DB: mom_recipes
+    networks:
+      - mom_recipes
+    
+  storage:
+    image: minio/minio:RELEASE.2025-09-07T16-13-09Z
+    container_name: storage
+    volumes:
+      - storage_data:/data
+    ports:
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minio_password
+    command: server /storage_data --console-address ":9001"
+    networks:
+      - mom_recipes
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend-dev
+    volumes:
+      - ./backend:/usr/src/app
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - PG_USER=admin
+      - PG_PASSWORD=db_password
+      - PG_DB=mom_recipes
+      - PG_HOST=db-postgres
+      - PG_PORT=5432
+      - MINIO_ENDPOINT=storage
+      - MINIO_PORT=9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minio_password
+    command: npm run dev
+    depends_on:
+      - storage
+      - db
+    networks:
+      - mom_recipes
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: frontend-dev
+    volumes:
+      - ./frontend:/usr/src/app
+    ports:
+      - "5173:5173"
+    networks:
+      - mom_recipes
+    command: npm run dev
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./nginx/Dockerfile.dev
+    container_name: nginx-dev
+    ports:
+      - "80:80"
+    networks:
+      - mom_recipes
+    depends_on:
+      - backend
+      - frontend
+
+networks:
+  mom_recipes:
+
+volumes:
+  storage_data:
+  db_data:
