@@ -74,7 +74,7 @@ services:
       dockerfile: ./nginx/Dockerfile.dev
     container_name: nginx-dev
     ports:
-      - "80:80"
+      - "8080:80"
     networks:
       - mom_recipes
     depends_on:
