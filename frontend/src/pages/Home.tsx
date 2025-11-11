@@ -44,7 +44,7 @@ export default function Home() {
 	return (
 		<main>
 			<GridItems recipes={featuredRecipes} onItemClick={onItemClick} onNewRecipeClick={onNewRecipeClick} />
-			{featuredRecipes.length > 0 && (
+			{featuredRecipes.length > 6 && (
 				<div className="flex justify-center mb-4">
 					<button onClick={onFeelingLuckyClick}>
 						<span className="underline font-semibold text-on-background">

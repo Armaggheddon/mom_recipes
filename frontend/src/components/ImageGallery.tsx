@@ -3,7 +3,7 @@ import { category2Icon } from "../utils/utils";
 
 interface ImageGalleryProps {
 	userImages: string[];
-	generatedImage: string;
+	generatedImage?: string;
 	recipeType: string;
 }
 

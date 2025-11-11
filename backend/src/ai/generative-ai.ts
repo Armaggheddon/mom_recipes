@@ -23,6 +23,8 @@ IMPORTANT VALIDATION RULES:
 3. The recipe could be handwritten, typed, or in any format, but it must be a legitimate recipe.
 4. Images of random food without preparation instructions are NOT recipes.
 
+For the nutritional facts, estimate based on typical values for the ingredients provided.
+
 Extract the recipe details and structure them into a valid JSON object.
 If you cannot find a legitimate recipe in the images, use "recipeName": "No recipe found".`;
 
@@ -75,10 +77,38 @@ const recipeSchema = {
         },
         servings: {
             type: Type.NUMBER,
-            description: "Optional: The number of servings the recipe yields."
+            description: "The number of servings the recipe yields. If not specified, estimate based on typical portion sizes."
+        },
+        nutrition: {
+            type: Type.OBJECT,
+            description: "Nutritional facts for the final dish based on the ingredients per serving.",
+            properties: {
+                calories: {
+                    type: Type.NUMBER,
+                    description: "The total number of calories per serving."
+                },
+                protein: {
+                    type: Type.NUMBER,
+                    description: "The total amount of protein per serving in grams."
+                },
+                fat: {
+                    type: Type.NUMBER,
+                    description: "The total amount of fat per serving in grams."
+                },
+                carbohydrates: {
+                    type: Type.NUMBER,
+                    description: "The total amount of carbohydrates per serving in grams."
+                }
+            },
+            required: ["calories", "protein", "fat", "carbohydrates"]
+        },
+        description: {
+            type: Type.STRING,
+            description: "A brief description of the recipe, its flavor profile, or any special characteristics to be used as a summary."
         }
+
     },
-    required: ["recipeName", "recipeType", "cookTime", "ingredients", "instructions"]
+    required: ["recipeName", "recipeType", "cookTime", "ingredients", "instructions", "nutrition", "servings", "description"]
 }
 
 
@@ -97,7 +127,7 @@ export const generateRecipeFromImages = async (imagesBase64: string[]): Promise<
     const textPart = {text: SYSTEM_PROMPT};
     
     const response = await aiClient.models.generateContent({
-        model: "gemini-2.5-flash",
+        model: "gemini-2.5-flash-lite",
         contents: {parts: [textPart, ...imageParts]},
         config: {
             responseMimeType: "application/json",
@@ -105,7 +135,7 @@ export const generateRecipeFromImages = async (imagesBase64: string[]): Promise<
         }
     });
 
-    console.log('Generated Recipe from AI:', response);
+    console.log('Generated Recipe from AI:', response.text);
 
     const parsedJson = JSON.parse(response.text ?? '{}');
 
@@ -149,48 +179,12 @@ export const generateRecipeFromImages = async (imagesBase64: string[]): Promise<
             order: index + 1,
             description: inst
         })),
+        nutrition: parsedJson.nutrition,
+        description: parsedJson.description,
         user_image_paths: [],
         notes: parsedJson.notes,
         servings: parsedJson.servings,
     };
     
     return recipe;
-}
-
-export const generateImageFromRecipe = async (recipe: Recipe): Promise<Buffer | null> => {
-    try {
-        const prompt = `Create a high-quality, appetizing, photorealistic image of ${recipe.name}. This ${recipe.type} dish takes approximately ${recipe.time_to_cook} minutes to cook. Main ingredients include: ${recipe.ingredients.slice(0, 5).map(ing => ing.name).join(', ')}. Show the finished dish beautifully plated, with appealing presentation suitable for a recipe book. Make it look delicious and inviting.`;
-
-        const response = await aiClient.models.generateContent({
-            model: "gemini-2.5-flash-image",
-            contents: prompt,
-            config: {
-                responseModalities: ['Image'],
-                imageConfig: {
-                    aspectRatio: "16:9",
-                },
-            }
-        });
-
-        const imgPart = response.candidates?.[0]?.content?.parts?.[0] ?? null;
-        
-        const imageData = imgPart?.inlineData?.data;
-        if (!imageData) {
-            console.error('No image data returned from AI');
-            return null;
-        }
-        const buffer = Buffer.from(imageData, 'base64');
-
-        if (!buffer) {
-            console.error('No image bytes returned from AI');
-            return null;
-        }
-
-        // Return the image bytes
-        return buffer;
-    } catch (error) {
-        console.error('Error generating image from recipe:', error);
-        // Return null on any error as per requirements
-        return null;
-    }
 }

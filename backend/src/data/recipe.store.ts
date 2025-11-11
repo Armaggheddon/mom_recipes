@@ -12,7 +12,6 @@ const minioClient = new Client({
 });
 
 const USER_UPLOAD_BUCKET = 'user-uploads';
-const GENERATED_IMAGES_BUCKET = 'generated-images';
 // Ensure both bucket exists and that are publicly accessible GET
 async function ensureBucketExists(bucketName: string) {
   const exists = await minioClient.bucketExists(bucketName);
@@ -35,7 +34,6 @@ async function ensureBucketExists(bucketName: string) {
 }
 
 ensureBucketExists(USER_UPLOAD_BUCKET).catch(console.error);
-ensureBucketExists(GENERATED_IMAGES_BUCKET).catch(console.error);
 
 
 export const putUserImage = async (data: Buffer, mimeType: string): Promise<string> => {
@@ -45,16 +43,6 @@ export const putUserImage = async (data: Buffer, mimeType: string): Promise<stri
   return `/storage/${USER_UPLOAD_BUCKET}/${objectName}`;
 }
 
-export const putGeneratedImage = async (data: Buffer, mimeType: string): Promise<string> => {
-  const objectName = `${Date.now()}-${randomUUID().toString()}.${mimeType.split('/')[1].toLowerCase()}`;
-  await minioClient.putObject(GENERATED_IMAGES_BUCKET, objectName, data, data.length);
-  return `/storage/${GENERATED_IMAGES_BUCKET}/${objectName}`;
-}
-
 export const deleteUserImage = async (objectName: string): Promise<void> => {
   await minioClient.removeObject(USER_UPLOAD_BUCKET, objectName);
-}
-
-export const deleteGeneratedImage = async (objectName: string): Promise<void> => {
-  await minioClient.removeObject(GENERATED_IMAGES_BUCKET, objectName);
 }

@@ -78,11 +78,11 @@ const RecipeApi = {
             }
 
             const result = await response.json();
-            if (!result.id) {
+            if (!result.recipeId) {
                 console.error("No recipe ID returned from API:", result);
                 return null;
             }
-            return result.id;
+            return result.recipeId;
         } catch (error) {
             console.error("Error posting new recipe:", error);
             throw error; // Re-throw to let the caller handle it

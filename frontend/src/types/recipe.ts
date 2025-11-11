@@ -9,14 +9,22 @@ export interface Step {
 	description: string;
 }
 
+export interface NutritionInfo {
+	calories: number;
+	fat: number; // in grams
+	carbohydrates: number; // in grams
+	protein: number; // in grams
+}
+
 export interface Recipe {
 	id: number;
 	name: string;
 	user_image_paths: string[];
-	generated_image_path?: string;
 	time_to_cook: number; // in minutes
-	ingredients: Ingredient[];
 	steps: Step[];
+	ingredients: Ingredient[];
+	nutrition: NutritionInfo;
+	description: string;
 	type: RecipeType;
 	notes?: string;
 	servings: number;
@@ -26,7 +34,8 @@ export interface Recipe {
 export interface RecipeTiny {
 	id: number;
 	name: string;
-	generated_image_path?: string;
+	description: string;
+	image_path: string;
 	time_to_cook: number; // in minutes
 	type: RecipeType;
 }

@@ -14,11 +14,12 @@ export default function EditRecipe({ recipe, onEditSave, onEditCancel }: EditRec
 	const [selectedRecipeType, setSelectedRecipeType] = useState<string>(recipe.type || "");
 
 	return (
-		<div>
+		<div className="flex flex-col md:flex-row md:space-x-4">
 			{/* tiny gallery of images */}
-			<div className="flex space-x-2 mb-4">
-				<ImageGallery userImages={recipe.user_image_paths} generatedImage={recipe.generated_image_path || ""} recipeType={editedRecipe.type} />
-			</div>
+			
+			<ImageGallery userImages={recipe.user_image_paths} recipeType={editedRecipe.type} />
+			
+			<div className={`p-4 ${recipe.user_image_paths.length > 0 ? 'md:w-1/2' : 'md:w-full'} overflow-y-auto`}>
 
 			{/* editable fields for title, ingredients, steps */}
 			<div>
@@ -27,6 +28,45 @@ export default function EditRecipe({ recipe, onEditSave, onEditCancel }: EditRec
 					type="text"
 					value={editedRecipe.name}
 					onChange={(e) => setEditedRecipe({ ...editedRecipe, name: e.target.value })}
+					className="w-full p-2 border rounded mb-4 bg-background text-on-background"
+				/>
+
+				<label className="text-primary block mb-2 font-semibold">Description:</label>
+				<textarea
+					value={editedRecipe.description}
+					onChange={(e) => setEditedRecipe({ ...editedRecipe, description: e.target.value })}
+					className="w-full p-2 border rounded mb-4 bg-background text-on-background"
+				/>
+
+				<label className="text-primary block mb-2 font-semibold">Calories (kcal):</label>
+				<input
+					type="number"
+					value={editedRecipe.nutrition?.calories || ''}
+					onChange={(e) => setEditedRecipe({ ...editedRecipe, nutrition: { ...(editedRecipe.nutrition || {}), calories: Number(e.target.value) } })}
+					className="w-full p-2 border rounded mb-4 bg-background text-on-background"
+				/>
+
+				<label className="text-primary block mb-2 font-semibold">Fat (g):</label>
+				<input
+					type="number"
+					value={editedRecipe.nutrition?.fat || ''}
+					onChange={(e) => setEditedRecipe({ ...editedRecipe, nutrition: { ...(editedRecipe.nutrition || {}), fat: Number(e.target.value) } })}
+					className="w-full p-2 border rounded mb-4 bg-background text-on-background"
+				/>
+
+				<label className="text-primary block mb-2 font-semibold">Carbohydrates (g):</label>
+				<input
+					type="number"
+					value={editedRecipe.nutrition?.carbohydrates || ''}
+					onChange={(e) => setEditedRecipe({ ...editedRecipe, nutrition: { ...(editedRecipe.nutrition || {}), carbohydrates: Number(e.target.value) } })}
+					className="w-full p-2 border rounded mb-4 bg-background text-on-background"
+				/>
+
+				<label className="text-primary block mb-2 font-semibold">Protein (g):</label>
+				<input
+					type="number"
+					value={editedRecipe.nutrition?.protein || ''}
+					onChange={(e) => setEditedRecipe({ ...editedRecipe, nutrition: { ...(editedRecipe.nutrition || {}), protein: Number(e.target.value) } })}
 					className="w-full p-2 border rounded mb-4 bg-background text-on-background"
 				/>
 
@@ -174,6 +214,7 @@ export default function EditRecipe({ recipe, onEditSave, onEditCancel }: EditRec
 			<div className="flex justify-center space-x-4 mt-6">
 				<IconButton icon="close" onClick={onEditCancel} label="Cancel" />
 				<IconButton icon="save" onClick={() => onEditSave(editedRecipe)} label="Save" />
+			</div>
 			</div>
 		</div>
 	);

@@ -24,7 +24,7 @@ export default function RecipeContents({ recipe, onDeleteClick, onEditClick }: R
 
 	return (
 		<div className="flex flex-col md:flex-row md:space-x-4">
-			<ImageGallery userImages={recipe.user_image_paths} generatedImage={recipe.generated_image_path || ''} recipeType={recipe.type} />
+			<ImageGallery userImages={recipe.user_image_paths} recipeType={recipe.type} />
 			<div className={`p-4 ${recipe.user_image_paths.length > 0 ? 'md:w-1/2' : 'md:w-full'} overflow-y-auto`}>
 				<h3 className="text-4xl font-semibold font-display mb-2 text-on-surface">{recipe.name}</h3>
 				{/* <p className="text-gray-700 mb-4">{JSON.stringify(recipe)}</p> */}
@@ -41,6 +41,33 @@ export default function RecipeContents({ recipe, onDeleteClick, onEditClick }: R
 						</span>
 					)}
 				</div>
+
+				{/* description */}
+				{recipe.description && (
+					<p className="mt-4 text-on-surface-variant">{recipe.description}</p>
+				)}
+
+				{/* nutrition facts */}
+				{recipe.nutrition && (
+					<div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+						<div className="bg-surface-variant rounded-lg p-4 text-center">
+							<h5 className="text-sm text-on-surface-variant">Calories</h5>
+							<p className="text-2xl font-bold text-on-surface">{recipe.nutrition.calories}</p>
+						</div>
+						<div className="bg-surface-variant rounded-lg p-4 text-center">
+							<h5 className="text-sm text-on-surface-variant">Fat</h5>
+							<p className="text-2xl font-bold text-on-surface">{recipe.nutrition.fat}g</p>
+						</div>
+						<div className="bg-surface-variant rounded-lg p-4 text-center">
+							<h5 className="text-sm text-on-surface-variant">Protein</h5>
+							<p className="text-2xl font-bold text-on-surface">{recipe.nutrition.protein}g</p>
+						</div>
+						<div className="bg-surface-variant rounded-lg p-4 text-center">
+							<h5 className="text-sm text-on-surface-variant">Carbohydrates</h5>
+							<p className="text-2xl font-bold text-on-surface">{recipe.nutrition.carbohydrates}g</p>
+						</div>
+					</div>
+				)}
 
 				{/* list of ingredients that, when selected are crossed out */}
 				<div className="mt-4">
