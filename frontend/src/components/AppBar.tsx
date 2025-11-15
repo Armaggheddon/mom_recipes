@@ -13,29 +13,29 @@ export default function AppBar() {
           Mom Recipes
         </h2>
         <nav>
-          <ul className="flex space-x-6 items-center font-base">
+          <ul className="flex space-x-3 md:space-x-6 items-center font-base">
             <li>
-              <Link
+                <Link
                 to="/"
-                className={`text-on-background ${isActive("/") ? "font-bold" : "hover:text-on-background"}`}
-              >
+                className={`text-on-background ${isActive("/") ? "font-bold underline underline-offset-4 decoration-2" : "hover:text-on-background"}`}
+                >
                 <span className="hidden sm:inline">Home</span>
                 <span className="sm:hidden">Home</span>
-              </Link>
+                </Link>
             </li>
             <li>
               <Link
                 to="/recipe"
-                className={`text-on-background ${isActive("/recipe") ? "font-bold" : "hover:text-on-background"}`}
+                className={`text-on-background ${isActive("/recipe") ? "font-bold underline underline-offset-4 decoration-2" : "hover:text-on-background"}`}
               >
                 <span className="hidden sm:inline">All Recipes</span>
-                <span className="sm:hidden">Recipes</span>
+                <span className="sm:hidden">All</span>
               </Link>
             </li>
             <li>
               <Link
                 to="/new"
-                className="px-4 py-2 bg-primary-container rounded-full hover:opacity-70 transition font-semibold text-on-primary-container"
+                className="px-4 py-2 bg-primary-container rounded-full hover:opacity-70 transition font-bold text-on-primary-container"
               >
                 <span className="hidden sm:inline">+ New Recipe</span>
                 <span className="sm:hidden">+ New</span>

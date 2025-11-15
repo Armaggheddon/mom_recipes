@@ -20,8 +20,6 @@ export default function NewRecipe() {
   >("generating");
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  // TODO: add a way to manually adding a recipe in case it keeps failing uploading
-
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     const files = Array.from(e.dataTransfer.files).filter((file) =>
@@ -150,130 +148,145 @@ export default function NewRecipe() {
   };
 
   return (
-    <div>
+    <div className="max-w-7xl mx-auto my-8 px-4">
       {isGenerating ? (
         <RecipeGeneration
           status={generationStatus}
           errorMessage={errorMessage}
         />
       ) : (
-        <div className="max-w-7xl mx-auto py-8">
-          <div>
-            <div className="min-h-[60vh] border p-5 rounded-lg items-center flex justify-center">
-              {mode === "upload" ? (
-                <div
-                  onDragOver={(e) => e.preventDefault()}
-                  onDrop={handleDrop}
-                  className="w-full h-full border-2 border-dashed rounded-lg p-10 text-center mb-5 border-outline"
-                >
-                  <p className="text-on-background">
-                    Drag and drop images here
-                  </p>
-                  <input
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    onChange={handleFileSelect}
-                    ref={fileInputRef}
-                    className="hidden"
-                  />
-                  <button
-                    onClick={() => fileInputRef.current?.click()}
-                    className="mt-2 px-4 py-2 bg-primary text-on-primary rounded-full hover:opacity-70 transition"
+        <div className="flex flex-col h-[80vh] min-h-[640px]">
+          {/* Top 70%: upload / camera area + mode switch */}
+          <div className="flex flex-col flex-[0_0_70%] min-h-[360px]">
+            <div className="border p-5 rounded-lg flex flex-col h-full">
+              <div className="flex-1 flex items-center justify-center min-h-[280px]">
+                {mode === "upload" ? (
+                  <div
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={handleDrop}
+                    className="w-full h-full min-h-[280px] flex flex-col justify-center items-center border-2 border-dashed rounded-lg p-10 border-outline overflow-hidden"
                   >
-                    Choose Files
+                    <p className="text-on-background">Drag and drop images here</p>
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={handleFileSelect}
+                      ref={fileInputRef}
+                      className="hidden"
+                    />
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      className="mt-2 px-4 py-2 bg-secondary-container text-on-secondary-container font-body rounded-full hover:opacity-70 transition"
+                    >
+                      Choose Files
+                    </button>
+                  </div>
+                ) : (
+                  <div className="h-full min-h-[280px] relative w-full flex justify-center items-center overflow-hidden rounded-lg">
+                    <video
+                      ref={videoRef}
+                      autoPlay
+                      playsInline
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex gap-2 p-2">
+                      <button
+                        onClick={takePhoto}
+                        className="bg-white bg-opacity-75 px-4 py-2 rounded-full hover:scale-105 transition"
+                      >
+                        <span className="material-symbols-rounded w-10 h-10 place-content-center">
+                          circle
+                        </span>
+                      </button>
+                      <button
+                        onClick={swapCamera}
+                        className="bg-white bg-opacity-75 px-4 py-2 rounded-full hover:scale-105 transition"
+                      >
+                        <span className="material-symbols-rounded w-10 h-10 place-content-center">
+                          cameraswitch
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="flex justify-center mt-4">
+                <div className="bg-surface-container-high rounded-full p-1 flex">
+                  <button
+                    onClick={() => setMode("upload")}
+                    className={`px-4 py-2 rounded-full ${mode === "upload" ? "bg-primary text-on-primary font-bold" : "text-on-surface hover:opacity-70"}`}
+                  >
+                    Upload
+                  </button>
+                  <button
+                    onClick={() => setMode("camera")}
+                    className={`px-4 py-2 rounded-full ${mode === "camera" ? "bg-primary text-on-primary font-bold" : "text-on-surface hover:opacity-70"}`}
+                  >
+                    Camera
                   </button>
                 </div>
-              ) : (
-                <div className="h-full relative w-full flex justify-center items-center">
-                  <video
-                    ref={videoRef}
-                    autoPlay
-                    playsInline
-                    className="w-full rounded-lg"
-                  />
-                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex gap-2 p-2">
-                    <button
-                      onClick={takePhoto}
-                      className="bg-white bg-opacity-75 px-4 py-2 rounded-full hover:scale-105 transition"
-                    >
-                      <span className="material-symbols-rounded w-10 h-10 place-content-center">
-                        circle
-                      </span>
-                    </button>
-                    <button
-                      onClick={swapCamera}
-                      className="bg-white bg-opacity-75 px-4 py-2 rounded-full hover:scale-105 transition"
-                    >
-                      <span className="material-symbols-rounded w-10 h-10 place-content-center">
-                        cameraswitch
-                      </span>
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="flex justify-center mt-4">
-              <div className="bg-surface-container-high rounded-full p-1 flex">
-                <button
-                  onClick={() => setMode("upload")}
-                  className={`px-4 py-2 rounded-full ${mode === "upload" ? "bg-primary text-on-primary font-bold" : "text-on-surface hover:opacity-70"}`}
-                >
-                  Upload
-                </button>
-                <button
-                  onClick={() => setMode("camera")}
-                  className={`px-4 py-2 rounded-full ${mode === "camera" ? "bg-primary text-on-primary font-bold" : "text-on-surface hover:opacity-70"}`}
-                >
-                  Camera
-                </button>
               </div>
             </div>
+          </div>
 
-            <div>
-              {images.length > 0 ? (
-                <div className="mt-5">
-                  <div className="flex flex-wrap gap-2">
-                    {images.map((image, index) => (
-                      <div key={index} className="relative w-24 h-24">
-                        <img
-                          src={URL.createObjectURL(image)}
-                          alt={`Preview ${index}`}
-                          className="w-full h-full object-cover rounded-lg"
-                          onLoad={(e) =>
-                            URL.revokeObjectURL(
-                              (e.target as HTMLImageElement).src,
-                            )
-                          }
-                        />
-                        <button
-                          onClick={() => removeImage(index)}
-                          className="absolute top-1 right-1 bg-black bg-opacity-50 text-white rounded-full w-6 h-6 flex items-center justify-center"
-                        >
-                          &times;
-                        </button>
-                      </div>
-                    ))}
-                  </div>
+          {/* Bottom 30%: selected images + continue */}
+          <div className="flex flex-col flex-[0_0_30%] min-h-[200px] mt-4">
+            {images.length > 0 ? (
+              <div className="mt-2">
+                <div className="flex-shrink-0 flex flex-row overflow-x-auto space-x-2 mb-2 md:mb-0 [&::-webkit-scrollbar]:h-2  [&::-webkit-scrollbar-thumb]:bg-surface-variant [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full py-2">
+                  {images.map((image, index) => (
+                    <div key={index} className="relative w-24 h-24 flex-shrink-0">
+                      <img
+                        src={URL.createObjectURL(image)}
+                        alt={`Preview ${index}`}
+                        className="w-full h-full object-cover rounded-lg"
+                        onLoad={(e) =>
+                          URL.revokeObjectURL((e.target as HTMLImageElement).src)
+                        }
+                      />
+                      <button
+                        onClick={() => removeImage(index)}
+                        className="absolute top-1 right-1 bg-black bg-opacity-50 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  ))}
                 </div>
-              ) : (
-                <p className="text-center text-on-background mt-5">
-                  No images selected.
-                </p>
-              )}
-            </div>
+              </div>
+            ) : (
+              <p className="flex flex-col flex-[0_0_30%] min-h-[200px] mt-4 items-center justify-center text-on-surface-variant">
+                No images selected.
+              </p>
+            )}
 
+            {/* Required hidden canvas for capturing photos */}
             <canvas ref={canvasRef} style={{ display: "none" }} />
 
             {images.length > 0 && (
-              <div className="mt-7 text-center">
-                <button
-                  onClick={handleUpload}
-                  className="px-4 py-2 bg-primary text-on-primary font-bold rounded-full hover:opacity-70 transition"
-                >
-                  Continue
-                </button>
+              <div className="mt-4 mb-4 text-center self-center">
+                <style>
+                  {`
+            @keyframes aiBorderShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+            }
+            `}
+                </style>
+                <div className="relative inline-block rounded-full p-[2px] bg-[linear-gradient(90deg,#3b82f6,#ec4899,#06b6d4,#ec4899,#3b82f6)] bg-[length:300%_300%] animate-[aiBorderShift_6s_linear_infinite]">
+                  <button
+                    onClick={handleUpload}
+                    className="relative flex px-6 py-2 bg-primary-container text-on-primary-container font-bold rounded-full hover:bg-inverse-primary transition focus:outline-none focus:ring-2 focus:ring-primary/60"
+                  >
+                    <span className="material-symbols-rounded mr-2 align-middle">
+                      chef_hat
+                    </span>
+                    <p className="sm:hidden">Generate</p>
+                    <p className="hidden sm:inline">Generate Recipe</p>
+                  </button>
+                </div>
               </div>
             )}
           </div>

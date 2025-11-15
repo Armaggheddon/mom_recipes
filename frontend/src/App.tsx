@@ -7,8 +7,8 @@ import AllRecipes from "./pages/AllRecipes";
 
 function App() {
   return (
-    <div className="min-h-screen bg-background py-4">
-      <div className="px-4 max-w-7xl mx-auto">
+    <div className="min-h-screen bg-background">
+      <div className="px-4 py-4 max-w-7xl mx-auto">
         <AppBar />
         <main>
           <Routes>

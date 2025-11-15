@@ -72,20 +72,27 @@ export default function Recipe() {
 
   const handleCancelEdit = () => {
     setIsEditing(false);
+
   };
 
   return (
     <div className="px-4 py-8 max-w-7xl mx-auto">
       {loading ? (
-        <p className="text-gray-700 dark:text-gray-200">Loading recipe...</p>
+        <div className="flex flex-col items-center justify-center gap-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <p className="text-on-background">Loading recipe...</p>
+        </div>
       ) : recipe === null ? (
-        <p className="text-red-500">Recipe not found.</p>
+        <div className="flex flex-col items-center justify-center">
+          <span role="img" aria-label="sad emoji" className="text-4xl">😢</span>
+          <p className="text-error text-xl">Recipe not found.</p>
+        </div>
       ) : (
         <div>
           {isEditing ? (
             <div>
               <EditRecipe
-                recipe={recipe}
+                recipe={JSON.parse(JSON.stringify(recipe))}
                 onEditSave={handleSaveEdit}
                 onEditCancel={handleCancelEdit}
               />

@@ -2,10 +2,12 @@ export default function IconButton({
   icon,
   onClick,
   label,
+  disabled,
 }: {
   icon: string;
   onClick: () => void;
   label: string;
+  disabled?: boolean;
 }) {
   return (
     // a circular button with icon, the label is placed on the right side of the button
@@ -20,6 +22,7 @@ export default function IconButton({
       <button
         className="flex items-center justify-center w-10 h-10 p-4 bg-secondary-container text-on-secondary-container rounded-full"
         aria-label={label}
+        disabled={disabled}
       >
         <span className="material-symbols-rounded">{icon}</span>
       </button>

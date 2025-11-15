@@ -62,26 +62,36 @@ export default function ImageGallery({
           >
             <span className="material-symbols-rounded m-2">close</span>
           </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelectedImageIndex(
-                (prev) => (prev - 1 + allImages.length) % allImages.length,
-              );
-            }}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-primary rounded-full text-on-primary hover:opacity-80"
-          >
-            <span className="material-symbols-rounded m-2">chevron_left</span>
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelectedImageIndex((prev) => (prev + 1) % allImages.length);
-            }}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-primary rounded-full text-on-primary hover:opacity-80"
-          >
-            <span className="material-symbols-rounded m-2">chevron_right</span>
-          </button>
+          {allImages.length > 1 && (
+            <>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedImageIndex(
+                    (prev) => (prev - 1 + allImages.length) % allImages.length,
+                  );
+                }}
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-primary rounded-full text-on-primary hover:opacity-80"
+              >
+                <span className="material-symbols-rounded m-2">
+                  chevron_left
+                </span>
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedImageIndex(
+                    (prev) => (prev + 1) % allImages.length,
+                  );
+                }}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-primary rounded-full text-on-primary hover:opacity-80"
+              >
+                <span className="material-symbols-rounded m-2">
+                  chevron_right
+                </span>
+              </button>
+            </>
+          )}
         </div>
       )}
       {allImages.length > 1 && (
