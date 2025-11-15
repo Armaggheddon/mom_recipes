@@ -4,6 +4,7 @@ import type { RecipeTiny } from "../types/recipe";
 import RecipeRow from "../components/RecipeRow";
 import { useNavigate } from "react-router-dom";
 import SearchBar from "../components/SearchBar";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 export default function AllRecipes() {
   const [allRecipes, setAllRecipes] = useState<RecipeTiny[]>([]);
@@ -11,33 +12,52 @@ export default function AllRecipes() {
   const [isQueryResult, setIsQueryResult] = useState(false);
   const [recipeQuery, setRecipeQuery] = useState("");
   const [typeFilters, setTypeFilters] = useState<{ [key: string]: string }>({});
-  // const [currentPage, setCurrentPage] = useState(0);
-  // const recipesPerPage = 999; // TODO: implement pagination
+  const [currentPage, setCurrentPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const recipesPerPage = 20;
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchAllRecipes = async () => {
+    const fetchInitialRecipes = async () => {
       try {
-        const data = await RecipeApi.getRecipes(0, 1000);
+        const data = await RecipeApi.getRecipes(0, recipesPerPage);
         setAllRecipes(data);
         setRecipes(data);
+        setHasMore(data.length >= recipesPerPage);
+        setCurrentPage(0);
       } catch (error) {
-        console.error("Error fetching all recipes:", error);
+        console.error("Error fetching initial recipes:", error);
       }
     };
 
-    fetchAllRecipes();
+    fetchInitialRecipes();
   }, []);
 
-  // useMemo(() => {
-  //     RecipeApi.getRecipes(currentPage, recipesPerPage).then(data => {
-  //         setAllRecipes(data);
-  //         setRecipes(data);
-  //     }).catch(error => {
-  //         console.error("Error fetching all recipes:", error);
-  //     });
-  // }, [currentPage]);
+  const fetchMoreRecipes = async () => {
+    try {
+      const nextPage = currentPage + 1;
+      const data = await RecipeApi.getRecipes(nextPage, recipesPerPage);
+      
+      if (data.length === 0) {
+        setHasMore(false);
+        return;
+      }
+      
+      const newRecipes = [...allRecipes, ...data];
+      setAllRecipes(newRecipes);
+      
+      if (!isQueryResult) {
+        setRecipes(newRecipes);
+      }
+      
+      setCurrentPage(nextPage);
+      setHasMore(data.length >= recipesPerPage);
+    } catch (error) {
+      console.error("Error fetching more recipes:", error);
+      setHasMore(false);
+    }
+  };
 
   function onItemClick(id: number) {
     navigate(`/recipe/${id}`);
@@ -51,12 +71,7 @@ export default function AllRecipes() {
     query: string,
     typeFilters: { [key: string]: string },
   ) {
-    // const filteredRecipes = await RecipeApi.getRecipes(0, recipesPerPage, { queryString: query, type: Object.values(typeFilters) });
-    // setRecipes(filteredRecipes);
-    // setIsQueryResult(true);
-    // setRecipeQuery(query);
-    // For now filter using in-memory filtering, backend filtering will come
-    // when pagination is implemented
+    // For search/filter, use in-memory filtering on loaded recipes
     const lowerQuery = query.toLowerCase();
     const filteredRecipes = allRecipes.filter((recipe) => {
       const matchesQuery = recipe.name.toLowerCase().includes(lowerQuery);
@@ -134,9 +149,27 @@ export default function AllRecipes() {
             </div>
           </div>
         ) : (
-          recipes.map((recipe) => (
-            <RecipeRow key={recipe.id} recipe={recipe} onClick={onItemClick} />
-          ))
+          <InfiniteScroll
+            dataLength={recipes.length}
+            next={fetchMoreRecipes}
+            hasMore={!isQueryResult && hasMore}
+            loader={
+              <div className="text-center text-on-surface-variant mt-4 mb-4">
+                <div className="text-2xl">Loading more recipes...</div>
+              </div>
+            }
+            endMessage={
+              !isQueryResult && recipes.length > 0 ? (
+                <div className="text-center text-on-surface-variant mt-4 mb-4">
+                  <div className="text-lg">You've seen all recipes!</div>
+                </div>
+              ) : null
+            }
+          >
+            {recipes.map((recipe) => (
+              <RecipeRow key={recipe.id} recipe={recipe} onClick={onItemClick} />
+            ))}
+          </InfiniteScroll>
         )}
       </div>
     </div>

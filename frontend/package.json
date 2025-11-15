@@ -15,6 +15,7 @@
   "dependencies": {
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-infinite-scroll-component": "^6.1.0",
     "react-router-dom": "^7.9.4"
   },
   "devDependencies": {
@@ -22,6 +23,7 @@
     "@types/node": "^24.6.0",
     "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",
+    "@types/react-infinite-scroll-component": "^4.2.5",
     "@vitejs/plugin-react-swc": "^4.1.0",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.36.0",
